@@ -1,6 +1,6 @@
-# PRRSV pig PBMC immune single-cell RNA-seq manuscript
+# PRRSV pig PBMC immune scRNA-seq manuscript
 
-This repository contains analysis scripts, metadata, processed results, and figure-related files used for the PRRSV pig PBMC immune single-cell RNA-seq manuscript.
+This repository contains analysis scripts to generate figures used for the PRRSV pig PBMC scRNA-seq manuscript.
 
 ## Repository structure
 
