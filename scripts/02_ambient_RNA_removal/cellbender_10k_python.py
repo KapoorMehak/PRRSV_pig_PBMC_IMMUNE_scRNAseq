@@ -6,7 +6,7 @@ import cellbender
 #import numpy as np
 #import numba
 
-os.chdir("./Project_Fang_10X/Project_Fang_10X")
+os.chdir("./PRRSV")
 sample_dirs = [d for d in os.listdir() if d.startswith('Sample_') and os.path.isdir(d)]
 for sample_dir in sample_dirs:
     input_file = os.path.join(sample_dir, f"{sample_dir}_output", 'outs', 'raw_feature_bc_matrix.h5')
