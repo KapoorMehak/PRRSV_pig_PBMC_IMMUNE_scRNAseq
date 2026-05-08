@@ -1,5 +1,5 @@
 #######SCRIPT for GO analysis using cluter-profiler###########
-.libPaths("/work/ABG/mkapoor/mkapoor/.ondemand-new/mkapoor/rstudio/libs/4.4.1")
+.libPaths("./rstudio/libs/4.4.1")
 
 library(enrichplot)
 library(ggplot2)
@@ -13,15 +13,15 @@ library(clusterProfiler)
 
 ###compare if ExC mono have more enriched terms than all genes exp in the data#####
 #day 14#
-seurat_14dpi <- readRDS("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/filtered_postQC_postcb_postdoublet_postdowns_annotated_14dpi.rds")
+seurat_14dpi <- readRDS("filtered_postQC_postcb_postdoublet_postdowns_annotated_14dpi.rds")
 #cconvert to human ortholog gene names
-orthoGenes <- read.delim("/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/PigToHuman_GeneOrthos_v97.txt") # read in gene ortholog file
+orthoGenes <- read.delim("./PRRSV/PigToHuman_GeneOrthos_v97.txt") # read in gene ortholog file
 orthoGenes <- subset(orthoGenes, Human.homology.type == 'ortholog_one2one') # subset to only one to one orthologs
 genes <- as.data.frame(rownames(seurat_14dpi[['RNA']]@data)) # extract pig gene names from dataset
 colnames(genes) <- 'gene'
 genes <- data.frame(gene = genes)
 
-pigGenes <- read_delim('/work/ABG/mkapoor/mkapoor/PIPseq_Salmonella/2023_oct_seq/gtf/Sus_scrofa.Sscrofa11.1.97_modified06302021_JEW_SKS.csv' ,) # read in file with an updated gene symbol annotation for Sus scrofa v97 annotation build
+pigGenes <- read_delim('Sus_scrofa.Sscrofa11.1.97_modified06302021_JEW_SKS.csv' ,) # read in file with an updated gene symbol annotation for Sus scrofa v97 annotation build
 pigGenes$FinalList <-gsub("_", "-", pigGenes$gene_name) # replace all underscores with dashes since this occurred when processing data in a previous step , total length:1292513
 pigGenes <- pigGenes[pigGenes$FinalList %in% genes$gene, ] # slim down to only genes in our dataset
 orthos <- intersect(pigGenes$gene_id, orthoGenes$Gene.stable.ID) # find which genes are one-to-one orthologs
@@ -43,15 +43,15 @@ expressed_genes_mapped <- pig2human %>%
   unique()
 
 #day 84#
-seurat_84dpi <- readRDS("/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/filtered_postQC_postcb_postdoublet_postdowns_postcellcycle_updated_annotation_84dpi.rds")
+seurat_84dpi <- readRDS("filtered_postQC_postcb_postdoublet_postdowns_postcellcycle_updated_annotation_84dpi.rds")
 #convert to human ortholog gene names
-orthoGenes <- read.delim("/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/PigToHuman_GeneOrthos_v97.txt") # read in gene ortholog file
+orthoGenes <- read.delim("./PRRSV/PRRSV_cellranger_v97/PigToHuman_GeneOrthos_v97.txt") # read in gene ortholog file
 orthoGenes <- subset(orthoGenes, Human.homology.type == 'ortholog_one2one') # subset to only one to one orthologs
 genes <- as.data.frame(rownames(seurat_84dpi[['RNA']]@data)) # extract pig gene names from dataset
 colnames(genes) <- 'gene'
 genes <- data.frame(gene = genes)
 
-pigGenes <- read_delim('/work/ABG/mkapoor/mkapoor/PIPseq_Salmonella/2023_oct_seq/gtf/Sus_scrofa.Sscrofa11.1.97_modified06302021_JEW_SKS.csv' ,) # read in file with an updated gene symbol annotation for Sus scrofa v97 annotation build
+pigGenes <- read_delim('Sus_scrofa.Sscrofa11.1.97_modified06302021_JEW_SKS.csv' ,) # read in file with an updated gene symbol annotation for Sus scrofa v97 annotation build
 pigGenes$FinalList <-gsub("_", "-", pigGenes$gene_name) # replace all underscores with dashes since this occurred when processing data in a previous step , total length:1292513
 pigGenes <- pigGenes[pigGenes$FinalList %in% genes$gene, ] # slim down to only genes in our dataset
 orthos <- intersect(pigGenes$gene_id, orthoGenes$Gene.stable.ID) # find which genes are one-to-one orthologs
@@ -73,8 +73,8 @@ expressed_genes_mapped_84 <- pig2human %>%
 ###########################
 
 #MONOCYTES #
-de_results_mono<- read.csv("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/MAST_DE_14dpi/Monocytes/Mast_Mono_ext_per.csv")
-de_results_mono<- read.csv("/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/MAST_DE_84dpi/Monocytes/Mast_Monocytes_ext_per_sigFDR.csv")
+de_results_mono<- read.csv("./PRRSV/Monocytes/Mast_Mono_ext_per.csv")
+de_results_mono<- read.csv("./PRRSV/Monocytes/Mast_Monocytes_ext_per_sigFDR.csv")
 colnames(de_results_mono)[2] <- "gene"
 de_results_mono$gene <- as.character(de_results_mono$gene)
 de_results_mono <- na.omit(de_results_mono)
@@ -148,8 +148,8 @@ p<-ggplot(top_terms, aes(x = median_abs_logFC,
   theme_bw() +
   theme(axis.text.y = element_text(size = 10, face = "bold"))
 p
-write.csv(GO_results_minGsize5, "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/GSEA_GO/GO_Mono/GO_terms/mono_GO_EP.csv", row.names = FALSE)
-ggsave(file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/GSEA_GO/GO_Mono/GO_terms/mono_EP_GO.png", p, width = 11, height = 5, units = "in")
+#write.csv(GO_results_minGsize5, "./PRRSV/GSEA_GO/GO_Mono/GO_terms/mono_GO_EP.csv", row.names = FALSE)
+#ggsave(file = "./PRRSV/GSEA_GO/GO_Mono/GO_terms/mono_EP_GO.png", p, width = 11, height = 5, units = "in")
 
 #run pathway
 library(msigdbr)
@@ -177,7 +177,6 @@ path_magnitude <- path_genes %>%
     median_abs_logFC = median(abs(logFC), na.rm = TRUE)
   ) %>%
   arrange(desc(median_abs_logFC))
-#write.csv(go_magnitude, "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/compare_14_84/GO_unique_genes/GO_term_mag_d14_minGsize20_sim0.35", row.names = FALSE)
 top_terms <- path_magnitude %>% top_n(35, median_abs_logFC)
 
 
@@ -195,8 +194,8 @@ p<-ggplot(top_terms, aes(x = median_abs_logFC,
   ) +
   theme_bw() +
   theme(axis.text.y = element_text(size = 10, face = "bold"))
-write.csv(pathway, "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/GSEA_GO/GO_Mono/GO_terms/mono_EP_GO_path.csv", row.names = FALSE)
-ggsave(file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/GSEA_GO/GO_Mono/GO_terms/mono_EP_GO_path.png", p, width = 11, height = 5, units = "in")
+#write.csv(pathway, "./PRRSV/GSEA_GO/GO_Mono/GO_terms/mono_EP_GO_path.csv", row.names = FALSE)
+#ggsave(file = "./PRRSV/GSEA_GO/GO_Mono/GO_terms/mono_EP_GO_path.png", p, width = 11, height = 5, units = "in")
 
 go_df <- as.data.frame(clust_simple)
 go_df$FirstGene <- sapply(strsplit(as.character(go_df$geneID), "/"), function(x) {paste(head(x,5), collapse =",")})
@@ -245,7 +244,7 @@ geom_point(
   )
 
 p
-ggsave(file = "/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/GSEA_GO/GO_mono/GO_terms/mono_PC_GO_path_v2.png", plot, width = 12, height = 5, units = "in")
+
 
 
 ############################
@@ -253,7 +252,7 @@ ggsave(file = "/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/GSEA_GO/GO_m
 ###########################
 
 #MONOCYTES #
-de_results_mono<- read.csv("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/MAST_DE_14dpi/Monocytes/Mast_Mono_ext_con.csv")
+de_results_mono<- read.csv("./PRRSV/Monocytes/Mast_Mono_ext_con.csv")
 colnames(de_results_mono)[2] <- "gene"
 de_results_mono$gene <- as.character(de_results_mono$gene)
 de_results_mono <- na.omit(de_results_mono)
@@ -430,7 +429,7 @@ ggplot(top_terms, aes(x = median_abs_logFC,
 ###########################
 
 #MONOCYTES #
-de_results_mono<- read.csv("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/MAST_DE_14dpi/Monocytes/Mast_Mono_per_con.csv")
+de_results_mono<- read.csv("./PRRSV/Monocytes/Mast_Mono_per_con.csv")
 colnames(de_results_mono)[2] <- "gene"
 de_results_mono$gene <- as.character(de_results_mono$gene)
 de_results_mono <- na.omit(de_results_mono)
@@ -531,7 +530,6 @@ path_magnitude <- path_genes %>%
     median_abs_logFC = median(abs(logFC), na.rm = TRUE)
   ) %>%
   arrange(desc(median_abs_logFC))
-#write.csv(go_magnitude, "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/compare_14_84/GO_unique_genes/GO_term_mag_d14_minGsize20_sim0.35", row.names = FALSE)
 top_terms <- path_magnitude %>% top_n(35, median_abs_logFC)
 
 
@@ -556,7 +554,7 @@ ggplot(top_terms, aes(x = median_abs_logFC,
 ###########################
 
 #MONOCYTES #
-de_results_mono<- read.csv("/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/MAST_DE_84dpi/Monocytes/Mast_Monocytes_ext_per_sigFDR.csv")
+de_results_mono<- read.csv("./PRRSV/Monocytes/Mast_Monocytes_ext_per_sigFDR.csv")
 colnames(de_results_mono)[2] <- "gene"
 de_results_mono$gene <- as.character(de_results_mono$gene)
 de_results_mono <- na.omit(de_results_mono)
@@ -630,8 +628,8 @@ p<-ggplot(top_terms, aes(x = median_abs_logFC,
   ) +
   theme_bw() +
   theme(axis.text.y = element_text(size = 10, face = "bold"))
-write.csv(GO_results_minGsize5, "/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/GSEA_GO/GO_mono/GO_terms/mono_EP_GO.csv", row.names = FALSE)
-ggsave(file = "/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/GSEA_GO/GO_mono/GO_terms/mono_EP_GO.png", p, width = 11, height = 5, units = "in")
+write.csv(GO_results_minGsize5, "./PRRSV/GSEA_GO/GO_mono/GO_terms/mono_EP_GO.csv", row.names = FALSE)
+ggsave(file = "./PRRSV/GSEA_GO/GO_mono/GO_terms/mono_EP_GO.png", p, width = 11, height = 5, units = "in")
 
 #run pathway
 library(msigdbr)
@@ -659,7 +657,6 @@ path_magnitude <- path_genes %>%
     median_abs_logFC = median(abs(logFC), na.rm = TRUE)
   ) %>%
   arrange(desc(median_abs_logFC))
-#write.csv(go_magnitude, "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/compare_14_84/GO_unique_genes/GO_term_mag_d14_minGsize20_sim0.35", row.names = FALSE)
 top_terms <- path_magnitude %>% top_n(35, median_abs_logFC)
 
 
@@ -677,15 +674,15 @@ p<-ggplot(top_terms, aes(x = median_abs_logFC,
   ) +
   theme_bw() +
   theme(axis.text.y = element_text(size = 10, face = "bold"))
-write.csv(top_terms, "/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/GSEA_GO/GO_mono/GO_terms/mono_PC_GO_path.csv", row.names = FALSE)
-ggsave(file = "/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/GSEA_GO/GO_mono/GO_terms/mono_PC_GO_path.png", p, width = 11, height = 5, units = "in")
+write.csv(top_terms, "./PRRSV/GSEA_GO/GO_mono/GO_terms/mono_PC_GO_path.csv", row.names = FALSE)
+ggsave(file = "./PRRSV/GSEA_GO/GO_mono/GO_terms/mono_PC_GO_path.png", p, width = 11, height = 5, units = "in")
 
 ############################
 ######Persistent vs Control- 84####
 ###########################
 
 #MONOCYTES #
-de_results_mono<- read.csv("/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/MAST_DE_84dpi/Monocytes/Mast_Monocytes_per_con_sigFDR.csv")
+de_results_mono<- read.csv("./PRRSV/Monocytes/Mast_Monocytes_per_con_sigFDR.csv")
 colnames(de_results_mono)[2] <- "gene"
 de_results_mono$gene <- as.character(de_results_mono$gene)
 de_results_mono <- na.omit(de_results_mono)
@@ -759,8 +756,8 @@ p<-ggplot(top_terms, aes(x = median_abs_logFC,
   ) +
   theme_bw() +
   theme(axis.text.y = element_text(size = 10, face = "bold"))
-write.csv(top_terms, "/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/GSEA_GO/GO_mono/GO_terms/mono_PC_GO.csv", row.names = FALSE)
-ggsave(file = "/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/GSEA_GO/GO_mono/GO_terms/mono_PC_GO.png", p, width = 11, height = 5, units = "in")
+write.csv(top_terms, "./PRRSV/GSEA_GO/GO_mono/GO_terms/mono_PC_GO.csv", row.names = FALSE)
+ggsave(file = "./PRRSV/GSEA_GO/GO_mono/GO_terms/mono_PC_GO.png", p, width = 11, height = 5, units = "in")
 
 #run pathway
 library(msigdbr)
@@ -788,7 +785,6 @@ path_magnitude <- path_genes %>%
     median_abs_logFC = median(abs(logFC), na.rm = TRUE)
   ) %>%
   arrange(desc(median_abs_logFC))
-#write.csv(go_magnitude, "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/compare_14_84/GO_unique_genes/GO_term_mag_d14_minGsize20_sim0.35", row.names = FALSE)
 top_terms <- path_magnitude %>% top_n(35, median_abs_logFC)
 
 
@@ -806,8 +802,8 @@ p<-ggplot(top_terms, aes(x = median_abs_logFC,
   ) +
   theme_bw() +
   theme(axis.text.y = element_text(size = 10, face = "bold"))
-write.csv(top_terms, "/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/GSEA_GO/GO_mono/GO_terms/mono_PC_GO_path.csv", row.names = FALSE)
-ggsave(file = "/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/GSEA_GO/GO_mono/GO_terms/mono_PC_GO_path.png", p, width = 11, height = 5, units = "in")
+write.csv(top_terms, "./PRRSV/GSEA_GO/GO_mono/GO_terms/mono_PC_GO_path.csv", row.names = FALSE)
+ggsave(file = "./PRRSV/GSEA_GO/GO_mono/GO_terms/mono_PC_GO_path.png", p, width = 11, height = 5, units = "in")
 
 go_df <- as.data.frame(clust_simple)
 go_df$FirstGene <- sapply(strsplit(as.character(go_df$geneID), "/"), function(x) {paste(head(x,1), collapse =",")})
@@ -834,7 +830,7 @@ plot <- ggplot(top_terms, aes(
     color = "-log10(FDR)"
   )
 plot
-ggsave(file = "/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/GSEA_GO/GO_mono/GO_terms/mono_PC_GO_path_v2.png", plot, width = 12, height = 5, units = "in")
+ggsave(file = "./PRRSV/GSEA_GO/GO_mono/GO_terms/mono_PC_GO_path_v2.png", plot, width = 12, height = 5, units = "in")
 
 
 
