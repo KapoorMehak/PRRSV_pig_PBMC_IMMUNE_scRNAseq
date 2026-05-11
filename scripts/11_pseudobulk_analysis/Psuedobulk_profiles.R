@@ -4,7 +4,7 @@
 #using monocyte signature residuals 
 ###############################################################################
 
-.libPaths("/work/ABG/mkapoor/.ondemand-new/mkapoor/rstudio/libs/4.4.1")
+.libPaths("rstudio/libs/4.4.1")
 library(Seurat)
 library(tidyverse)
 library(cowplot)
@@ -29,25 +29,19 @@ library(variancePartition)
 library(lmerTest)
 library(EnhancedVolcano)
 #load day 14
-seurat_14dpi <- readRDS("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/filtered_postQC_postcb_postdoublet_postdowns_annotated_14dpi.rds")
+seurat_14dpi <- readRDS("./PRRSV/filtered_postQC_postcb_postdoublet_postdowns_annotated_14dpi.rds")
 Idents(seurat_14dpi) <- seurat_14dpi$celltypes
-
-#We will separarte each pseudobulk profiles by its celltype##
-
+#separarte each pseudobulk profiles by its celltype##
 #create sce + metadata #
 counts <- seurat_14dpi@assays$RNA@counts 
 metadata <- seurat_14dpi@meta.data
-# Set up metadata as desired for aggregation and DE analysis
+# Set up metadata 
 metadata$celltypes <- factor(seurat_14dpi@active.ident)
-
-# Create single cell experiment object
 sce <- SingleCellExperiment(assays = list(counts = counts), 
                             colData = metadata)
-
 #remove lowly expressed with less than 1 counts
 sce_2 <- sce[rowSums(counts(sce) > 1) >= 1, ]
 dim(sce_2)
-
 counts_14 <- counts(sce_2)
 meta_14   <- as.data.frame(colData(sce_2))
 stopifnot(ncol(counts_14) == nrow(meta_14))
@@ -132,7 +126,7 @@ res  <- topTable(fit2, number = Inf)
 head(res)
 plotSA(fit, main="Residual stdev vs abundance") # variance trend 
 corfit$consensus  #corr of RE
-sc_de <-read.csv("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/MAST_DE_14dpi/B_cells/Mast_Bcell_ext_per_sigFDR.csv")
+sc_de <-read.csv("./PRRSV/MAST_DE_14dpi/B_cells/Mast_Bcell_ext_per_sigFDR.csv")
 genes_sc_sig <- sc_de$primerid[sc_de$fdr < 0.05 & abs(sc_de$logFC) > 0.05]
 
 keep <- with(res, (adj.P.Val < 0.25) | (abs(logFC) >= 0.05))
@@ -162,15 +156,6 @@ compare_df <- data.frame(
   FDR_pb    = bulk_sub$adj.P.Val
 )
 cor_test <- cor.test(compare_df$logFC_sc, compare_df$logFC_pb, method = "spearman") #0.65 p-value < 2.2e-16 correlation of 816 DEGs , 0.95 of 15 DEGs at 0.25 logfc
-write.csv(res,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/limma_voom/B/limma_voom_results_pb_EP.csv",
-          row.names = FALSE)
-write.csv(res_sub,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/limma_voom/B/limma_voom_results_pb_FC_0.05_EP.csv",
-          row.names = FALSE)
-write.csv(compare_df,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/limma_voom/B/limma_voom_results_compare_pb_sc_EP_0.05.csv",
-          row.names = FALSE)
 
 #do regression based 
 lcpm_pe <- edgeR::cpm(y_pe, log = TRUE, prior.count = 1)
@@ -178,7 +163,7 @@ meta_pe$Treatment <- factor(meta_pe$Treatment, levels = c("persistent","extinct"
 dim(pbmc_counts14_pe); table(meta_pe$Treatment)
 
 #check if monocyte DE show same as pseudobulk DE on MDS - just EP
-sc_de <-read.csv("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/MAST_DE_14dpi/Monocytes/Mast_Mono_ext_per_sigFDR.csv")
+sc_de <-read.csv("./PRRSV/MAST_DE_14dpi/Monocytes/Mast_Mono_ext_per_sigFDR.csv")
 genes_sc_sig <- sc_de$primerid[sc_de$fdr < 0.05 & abs(sc_de$logFC) > 0.05]
 genes_use <- intersect(genes_sc_sig, rownames(lcpm_pe))
 pb_mat <- as.matrix(lcpm_pe[genes_use, , drop = FALSE])
@@ -211,18 +196,13 @@ gene_expr_summary <- data.frame(
   Mean_logCPM = rowMeans(lcpm_pe[genes_detected, , drop = FALSE], na.rm = TRUE),
   SD_logCPM   = apply(lcpm_pe[genes_detected, , drop = FALSE], 1, sd, na.rm = TRUE)
 )
-write.csv(gene_expr_summary,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/B/GE_pb_summary_EP_logFC0.05.csv",
-          row.names = FALSE)
-write.csv(lcpm_pe[genes_use, ],
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/B/GE_pb_sample_EP_logFC0.05.csv")
 
 plot <- ggplot(df, aes(Treatment, mono_sig_adj, fill = Treatment)) +
   geom_boxplot(alpha = 0.4, outlier.shape = NA) +
   geom_jitter(width = 0.15, size = 3, aes(shape = Sow)) +
   labs(y = "B residuals")+
   theme_bw(base_size = 14)
-ggsave("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/B/plot.png", plot)
+
 #doesn not yeild significnace, no detectuin after adjusting for cell composition
 range(gene_expr_summary$Mean_logCPM)
 range(gene_expr_summary$SD_logCPM)
@@ -285,7 +265,7 @@ meta_pe$Treatment <- factor(meta_pe$Treatment, levels = c("control","extinct"))
 dim(pbmc_counts14_pe); table(meta_pe$Treatment)
 
 #check if monocyte DE show same as pseudobulk DE on MDS - just EC
-sc_de <-read.csv("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/MAST_DE_14dpi/B_cells/Mast_B_cells_ext_con_sigFDR.csv")
+sc_de <-read.csv("./PRRSV/MAST_DE_14dpi/B_cells/Mast_B_cells_ext_con_sigFDR.csv")
 genes_sc_sig <- sc_de$primerid[sc_de$fdr < 0.05 & abs(sc_de$logFC) > 0.05]
 genes_use <- intersect(genes_sc_sig, rownames(lcpm_pe))
 pb_mat <- as.matrix(lcpm_pe[genes_use, , drop = FALSE])
@@ -326,12 +306,7 @@ gene_expr_summary <- data.frame(
   Mean_logCPM = rowMeans(lcpm_pe[genes_detected, , drop = FALSE], na.rm = TRUE),
   SD_logCPM   = apply(lcpm_pe[genes_detected, , drop = FALSE], 1, sd, na.rm = TRUE)
 )
-write.csv(gene_expr_summary ,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/B/GE_pb_summary_EC_logFC0.05.csv",
-          row.names = FALSE)
-write.csv(lcpm_pe[genes_use, ],
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/B/GE_pb_sample_EC_logFC0.05.csv")
-ggsave("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/B/plot_EC.png", plot)
+
 range(gene_expr_summary$Mean_logCPM)
 range(gene_expr_summary$SD_logCPM)
 ###PC####
@@ -414,16 +389,6 @@ compare_df <- data.frame(
   FDR_pb    = bulk_sub$adj.P.Val
 )
 cor_test <- cor.test(compare_df$logFC_sc, compare_df$logFC_pb, method = "spearman") #0.29 p-value < .88e-06 correlation of 273 DEGs , 0.29 of 2704 DEGs at 0.25 logfc
-write.csv(res,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/limma_voom/B/limma_voom_results_pb_PC.csv",
-          row.names = FALSE)
-write.csv(res_sub,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/limma_voom/B/limma_voom_results_pb_FC_0.25_PC.csv",
-          row.names = FALSE)
-write.csv(compare_df,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/limma_voom/B/limma_voom_results_compare_pb_sc_PC_0.25.csv",
-          row.names = FALSE)
-ggsave("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/B/plot_PC.png", plot)
 range(gene_expr_summary$Mean_logCPM)
 range(gene_expr_summary$SD_logCPM)
 
@@ -435,7 +400,7 @@ meta_pe$Treatment <- factor(meta_pe$Treatment, levels = c("control","persistent"
 dim(pbmc_counts14_pe); table(meta_pe$Treatment)
 
 #check if monocyte DE show same as pseudobulk DE on MDS - just EP
-sc_de <-read.csv("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/MAST_DE_14dpi/B_cells/Mast_Bcell_per_con_sigFDR.csv")
+sc_de <-read.csv("./PRRSV/MAST_DE_14dpi/B_cells/Mast_Bcell_per_con_sigFDR.csv")
 genes_sc_sig <- sc_de$primerid[sc_de$fdr < 0.05 & abs(sc_de$logFC) > 0.05]
 genes_use <- intersect(genes_sc_sig, rownames(lcpm_pe))
 pb_mat <- as.matrix(lcpm_pe[genes_use, , drop = FALSE])
@@ -477,18 +442,13 @@ gene_expr_summary <- data.frame(
   Mean_logCPM = rowMeans(lcpm_pe[genes_detected, , drop = FALSE], na.rm = TRUE),
   SD_logCPM   = apply(lcpm_pe[genes_detected, , drop = FALSE], 1, sd, na.rm = TRUE)
 )
-write.csv(gene_expr_summary,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/B/GE_pb_summary_PC_logFC0.05.csv",
-          row.names = FALSE)
-write.csv(lcpm_pe[genes_use, ],
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/B/GE_pb_sample_PC_logFC0.05.csv")
 
 #plot - meanlogCPM= abg abundance of gene measured; sdlogcpm = noise/variability, cv = sd/mean, auc = predcitove power for evry gene across all samples
 #test roc if it sepeartes phenotypes; if fail NA
 # auc to separate ability of predicting groups
 #ci_low, ci_hihg - show uncertainity
 
-genes <-read.csv("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/GE_pb_summary_PC_logFC0.05.csv")
+genes <-read.csv("./PRRSV/Psuedobulk/GE_pb_summary_PC_logFC0.05.csv")
 gene_expr_summary$CV_log <- with(gene_expr_summary, SD_logCPM / (Mean_logCPM + 1e-8))
 meta_pe$Treatment <- factor(meta_pe$Treatment, levels = c("persistent", "extinct"))
 auc_data <- lapply(gene_expr_summary$Gene, function(g) {
@@ -526,17 +486,3 @@ best_genes <- gene_expr_auc %>%
   arrange(desc(AUC), CI_width, CV_log)
 
 print(head(best_genes, 20), row.names = FALSE)
-
-
-boxplot(as.numeric(lcpm_pe["PLAC8", ]) ~ meta_pe$Treatment,
-        main = paste("PLAC8 AUC =", round(auc(roc(meta_pe$Treatment, lcpm_pe["PLAC8", ])), 3)))
-
-boxplot(as.numeric(lcpm_pe["LUC7L3", ]) ~ meta_pe$Treatment,
-        main = paste("LUC7L3 AUC =", round(auc(roc(meta_pe$Treatment, lcpm_pe["LUC7L3", ])), 3)))
-
-boxplot(as.numeric(lcpm_pe["SRGN", ]) ~ meta_pe$Treatment,
-        main = paste("SRGN AUC =", round(auc(roc(meta_pe$Treatment, lcpm_pe["SRGN", ])), 3)))
-
-boxplot(as.numeric(lcpm_pe["ATP6", ]) ~ meta_pe$Treatment,
-        main = paste("ATP6 AUC =", round(auc(roc(meta_pe$Treatment, lcpm_pe["ATP6", ])), 3)))
-range(lcpm_pe["ATP6", ])

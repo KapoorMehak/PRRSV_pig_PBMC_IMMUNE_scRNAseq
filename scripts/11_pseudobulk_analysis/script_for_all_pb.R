@@ -4,7 +4,7 @@
 #using monocyte signature residuals 
 ###############################################################################
 
-.libPaths("/work/ABG/mkapoor/.ondemand-new/mkapoor/rstudio/libs/4.4.1")
+.libPaths("rstudio/libs/4.4.1")
 library(Seurat)
 library(tidyverse)
 library(cowplot)
@@ -29,7 +29,7 @@ library(variancePartition)
 library(lmerTest)
 library(EnhancedVolcano)
 #load day 14
-seurat_14dpi <- readRDS("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/filtered_postQC_postcb_postdoublet_postdowns_annotated_14dpi.rds")
+seurat_14dpi <- readRDS("./PRRSV/filtered_postQC_postcb_postdoublet_postdowns_annotated_14dpi.rds")
 Idents(seurat_14dpi) <- seurat_14dpi$celltypes
 
 #We will separarte each pseudobulk profiles by its celltype##
@@ -90,9 +90,7 @@ fit2 <- contrasts.fit(fit, ct)
 fit2 <- eBayes(fit2, robust = TRUE)
 res  <- topTable(fit2, number = Inf)
 head(res)
-sc_de <-read.csv("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/biomarker_from_sc/candidate_DEG_PI_D14.csv")
-#sc_de <-read.csv("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/MAST_DE_14dpi/CD8_NK/Mast_CD8_NK_ext_per_sigFDR.csv")
-#sc_de <-na.omit(sc_de)
+sc_de <-read.csv("./PRRSV/biomarker_from_sc/candidate_DEG_PI_D14.csv")
 genes_sc_sig <- sc_de$gene[sc_de$fdr < 0.05 & sc_de$absLFC > 0.25]
 pb <- as.data.frame(res)
 pb$gene <- rownames(pb)
@@ -112,20 +110,10 @@ compare_df <- data.frame(
   FDR_sc    = sc_sub$fdr,
   FDR_pb    = bulk_sub$adj.P.Val
 )
-write.csv(compare_df,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X//biomarker_from_sc/discr_pb_sc_VE_D14.csv",
-          row.names = FALSE)
+
 cor_test <- cor.test(compare_df$logFC_sc, compare_df$logFC_pb, method = "spearman") 
 cor_test
-write.csv(res,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/limma_voom/cd8_nk/limma_voom_results_pb_EP.csv",
-          row.names = FALSE)
-write.csv(res_sub,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/limma_voom/cd8_nk/limma_voom_results_pb_FC_0.05_EP.csv",
-          row.names = FALSE)
-write.csv(compare_df,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/limma_voom/cd8_nk/limma_voom_results_compare_pb_sc_EP_0.05.csv",
-          row.names = FALSE)
+
 topN <- 25
 
 plot_df <- compare_df %>%
@@ -174,8 +162,7 @@ p <- ggplot(plot_long, aes(x = logFC, y = gene)) +
     axis.text.y = element_text(face = "bold", size = 12),
     axis.title.y = element_text(face = "bold", size = 12)
   )
-p
-ggsave("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/biomarker_from_sc/cand_PI.png",p)
+
 #do regression based 
 y_pe   <- edgeR::DGEList(pbmc_counts14_pe)
 y_pe   <- edgeR::calcNormFactors(y_pe)
@@ -214,18 +201,12 @@ gene_expr_summary <- data.frame(
   Mean_logCPM = rowMeans(lcpm_pe[genes_detected, , drop = FALSE], na.rm = TRUE),
   SD_logCPM   = apply(lcpm_pe[genes_detected, , drop = FALSE], 1, sd, na.rm = TRUE)
 )
-write.csv(gene_expr_summary,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/cd8_nk/GE_pb_summary_EP_logFC0.05.csv",
-          row.names = FALSE)
-write.csv(lcpm_pe[genes_use, ],
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/cd8_nk/GE_pb_sample_EP_logFC0.05.csv")
 
 plot <- ggplot(df, aes(Treatment, mono_sig_adj, fill = Treatment)) +
   geom_boxplot(alpha = 0.4, outlier.shape = NA) +
   geom_jitter(width = 0.15, size = 3, aes(shape = Sow)) +
   labs(y = "cd8_nk residuals")+
   theme_bw(base_size = 14)
-ggsave("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/cd8_nk/plot_EP.png", plot)
 range(gene_expr_summary$Mean_logCPM)
 range(gene_expr_summary$SD_logCPM)
 
@@ -254,7 +235,7 @@ lcpm_pe <- edgeR::cpm(y_pe, log = TRUE, prior.count = 1)
 meta_pe$Treatment <- factor(meta_pe$Treatment, levels = c("control","extinct"))
 dim(pbmc_counts14_pe); table(meta_pe$Treatment)
 
-sc_de <-read.csv("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/MAST_DE_14dpi/CD8_NK/Mast_CD8_NK_ext_con_sigFDR.csv")
+sc_de <-read.csv("./PRRSV/MAST_DE_14dpi/CD8_NK/Mast_CD8_NK_ext_con_sigFDR.csv")
 sc_de <- na.omit(sc_de)
 genes_sc_sig <- sc_de$primerid[sc_de$fdr < 0.05 & abs(sc_de$logFC) > 0.05]
 genes_use <- intersect(genes_sc_sig, rownames(lcpm_pe))
@@ -296,12 +277,6 @@ gene_expr_summary <- data.frame(
   Mean_logCPM = rowMeans(lcpm_pe[genes_detected, , drop = FALSE], na.rm = TRUE),
   SD_logCPM   = apply(lcpm_pe[genes_detected, , drop = FALSE], 1, sd, na.rm = TRUE)
 )
-write.csv(gene_expr_summary ,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/cd8_nk/GE_pb_summary_EC_logFC0.05.csv",
-          row.names = FALSE)
-write.csv(lcpm_pe[genes_use, ],
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/cd8_nk/GE_pb_sample_EC_logFC0.05.csv")
-ggsave("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/cd8_nk/plot_EC.png", plot)
 range(gene_expr_summary$Mean_logCPM)
 range(gene_expr_summary$SD_logCPM)
 
@@ -340,7 +315,7 @@ fit2 <- contrasts.fit(fit, ct)
 fit2 <- eBayes(fit2, robust = TRUE)
 res  <- topTable(fit2, number = Inf)
 head(res)
-sc_de <-read.csv("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/MAST_DE_14dpi/CD8_NK/Mast_CD8_NK_per_con_sigFDR.csv")
+sc_de <-read.csv("./PRRSV/MAST_DE_14dpi/CD8_NK/Mast_CD8_NK_per_con_sigFDR.csv")
 sc_de <- na.omit(sc_de)
 genes_sc_sig <- sc_de$primerid[sc_de$fdr < 0.05 & abs(sc_de$logFC) > 0.05]
 
@@ -361,16 +336,6 @@ compare_df <- data.frame(
 )
 cor_test <- cor.test(compare_df$logFC_sc, compare_df$logFC_pb, method = "spearman") 
 cor_test
-write.csv(res,     file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/limma_voom/cd8_nk/limma_voom_results_pb_PC.csv",
-          row.names = FALSE)
-write.csv(res_sub,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/limma_voom/cd8_nk/limma_voom_results_pb_FC_0.05_PC.csv",
-          row.names = FALSE)
-write.csv(compare_df,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/limma_voom/cd8_nk/limma_voom_results_compare_pb_sc_PC_0.05.csv",
-          row.names = FALSE)
-
-
 #regression
 y_pe   <- edgeR::DGEList(pbmc_counts14_pe)
 y_pe   <- edgeR::calcNormFactors(y_pe)
@@ -413,18 +378,11 @@ plot <- ggplot(df, aes(Treatment, mono_sig_adj, fill = Treatment)) +
   labs(y = "cd8_nk residuals")+
   theme_bw(base_size = 14)
 
-ggsave("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/cd8_nk/plot_PC.png", plot)
-
 genes_detected <- genes_use
 gene_expr_summary <- data.frame(
   Gene = genes_detected,
   Mean_logCPM = rowMeans(lcpm_pe[genes_detected, , drop = FALSE], na.rm = TRUE),
   SD_logCPM   = apply(lcpm_pe[genes_detected, , drop = FALSE], 1, sd, na.rm = TRUE)
 )
-write.csv(gene_expr_summary,
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/cd8_nk/GE_pb_summary_PC_logFC0.05.csv",
-          row.names = FALSE)
-write.csv(lcpm_pe[genes_use, ],
-          file = "/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Psuedobulk/regression_based/cd8_nk/GE_pb_sample_PC_logFC0.05.csv")
 range(gene_expr_summary$Mean_logCPM)
 range(gene_expr_summary$SD_logCPM)
