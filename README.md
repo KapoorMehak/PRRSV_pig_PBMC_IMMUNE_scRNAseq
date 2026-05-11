@@ -22,10 +22,11 @@ We profiled peripheral blood mononuclear cells (PBMCs) from pigs challenged with
 
 ## Key Findings
 
-- scRNA-seq resolved **10 major immune cell populations** in pig PBMCs (14 DPI: 30 clusters; 84 DPI: 24 clusters)
+- scRNA-seq resolved **10 major immune cell populations** in pig PBMCs (14 DPI: 30 clusters; 84 DPI: 24 clusters) 
+- scRNA-seq identifies monocytes as the primary cell type distinguishing PRRSV infection outcomes, with divergence driven by cell-type-specific transcriptional programs rather than differences in immune cell composition
 - **Monocytes** show divergent transcriptional programs between VE and PI animals at both time points: VE monocytes transition from early inflammatory activation (14 DPI) to resolution (84 DPI); PI monocytes shift from metabolic activation (14 DPI) to sustained immune engagement (84 DPI)
-- Cross-timepoint analysis of **monocyte DEGs** identifies concordant and discordant gene sets that serve as candidate predictors of infection outcome
-- **Flow cytometry validation** confirms single-cell-derived immune population proportions (5 major cell types; Spearman correlation, FDR < 0.05) across both time points
+- Cross-timepoint analysis of **monocyte DEGs** identifies concordant and discordant gene sets. Temporal analysis reveals that when and how immune responses are mounted which determines infection outcome rather than their magnitude 
+- **Flow cytometry validation** Flow cytometry significantly correlates with scRNA-seq-derived immune cell proportions across major myeloid and lymphocyte populations at both 14 and 84 DPI, supporting the robustness of single-cell findings
 
 ---
 
@@ -78,8 +79,6 @@ PRRSV_pig_PBMC_IMMUNE_scRNAseq/
 | Fig. 6 | Flow cytometry validation of scRNA-seq immune cell proportions | `11_Flow_cytometry/check_flow_prop_script.R` |
 
 ---
-
-
 
 ## Data Availability
 
