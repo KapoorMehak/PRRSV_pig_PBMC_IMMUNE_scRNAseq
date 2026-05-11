@@ -32,36 +32,50 @@ We profiled peripheral blood mononuclear cells (PBMCs) from pigs challenged with
 ## Repository Structure
 
 ```
-PRRSV_pig_PBMC_IMMUNE_scRNAseq/scripts/
-├── 01_CellRanger/               # Read alignment and gene-barcode matrix generation
-├── 02_ambient_RNA_removal/      # Ambient RNA decontamination (e.g., SoupX/DecontX)
-├── 03_QC_filtering/             # Per-sample QC metrics and cell filtering
-├── 04_doublet_detection/        # Doublet identification and removal
-├── 05_downstream_analysis/      # Integration, clustering, UMAP, cell type annotation
-│                                #   → Figures 2 & 3
-├── 06_GO_enrichment/            # Gene Ontology enrichment (BP terms)
-│                                #   → Figures 4 & 5
-├── 07_concordant_discordant_analysis/  # Cross-timepoint DEG comparison
-│                                #   → Figure 5
-├── 08_unique_atD14_analysis/    # Unique DEGs and GO terms at 14 DPI
-│                                #   → Figure 5e
-├── 09_pseudobulk_analysis/      # Pseudobulk differential expression and gene detection
-└── 10_Flow_cytometry/           # Flow cytometry vs. scRNA-seq proportion correlation
-│                                #   → Figure 2,3,6
+PRRSV_pig_PBMC_IMMUNE_scRNAseq/
+├── 01_CellRanger/
+│   └── cellranger_script2.sh                       # Read alignment; gene-barcode matrix generation
+├── 02_ambient_RNA_removal/
+│   └── cellbender_10k_python.py                    # Ambient RNA decontamination (CellBender)
+├── 03_QC_filtering/
+│   ├── QC_after_cb_14dpi.ipynb                     # QC metrics and cell filtering — 14 DPI
+│   └── QC_after_cb_84dpi.ipynb                     # QC metrics and cell filtering — 84 DPI
+├── 04_doublet_detection/
+│   └── doublet_detection_14dpi.ipynb               # Doublet identification and removal
+├── 05_downstream_analysis/
+│   ├── downstream_analysis_14dpi.ipynb             # Normalization, clustering, UMAP, annotation — 14 DPI  → Fig. 2
+│   └── downstream_analysis_84dpi.ipynb             # Normalization, clustering, UMAP, annotation — 84 DPI  → Fig. 3
+├── 06_proportion_analysis/
+│   └── cell_prop_UMAP_gen.R                        # Cell type proportion plots and UMAP panels            → Figs. 2 & 3
+├── 07_DEG_analysis/
+│   ├── DEG_MAST_14DPI.R                            # MAST differential expression at 14 DPI
+│   ├── DEG_MAST_84DPI.R                            # MAST differential expression at 84 DPI
+│   └── DEG_MAST_84DPI_ABT_subset.R                 # MAST DEG — αβ T cell subset at 84 DPI
+├── 08_GO_enrichment/
+│   └── DEGs_GO_manuscript_mono.R                   # GO enrichment (BP/MF/CC) for monocyte DEGs           → Figs. 4 & 5
+├── 09_concordant_discordant_analysis/
+│   └── DE_summary_allcelltypes_allcontrast.ipynb   # Cross-timepoint DEG concordance/discordance          → Fig. 5
+├── 10_unique_atD14_analysis/
+│   └── unique_DEGs_GO.ipynb                        # Unique DEGs and GO terms at 14 DPI                   → Fig. 5
+├── 11_Flow_cytometry/
+│   └── check_flow_prop_script.R                    # Flow vs scRNA-seq proportion correlation             → Fig. 6
+├── 12_pseudobulk_analysis/
+│   ├── Pseudobulk_profiles.R                       # Pseudobulk expression profiles
+│   └── script_for_all_pb.R                         # Pseudobulk DE across all cell types                  → Fig. 4
 └── README.md
 ```
 ---
 
 ## Figure Guide
 
-| Figure | Description | Folder |
-|--------|-------------|--------|
-| Fig. 1 | PRRSV challenge experimental design | *(schematic BioRender — no code)* |
-| Fig. 2 | UMAP, cell type annotation, and proportion analysis at 14 DPI | `05_downstream_analysis/` → `06_downstream_analysis/`|
-| Fig. 3 | UMAP, cell type annotation, and proportion analysis at 84 DPI | `05_downstream_analysis/` |
-| Fig. 4 | Monocyte volcano plots and GO enrichment (VE vs PI, 14 & 84 DPI) | `11_pseudobulk_analysis/` → `08_GO_enrichment/` |
-| Fig. 5 | Cross-timepoint monocyte DEG concordance, discordant sets, unique 14 DPI terms | `09_concordant_discordant_analysis/` → `10_unique_atD14_analysis/` |
-| Fig. 6 | Flow cytometry validation of scRNA-seq immune cell proportions | `12_Flow_cytometry/` |
+| Figure | Description | Scripts |
+|--------|-------------|---------|
+| Fig. 1 | PRRSV challenge experimental design | *(BioRender schematic — no code)* |
+| Fig. 2 | UMAP, cell type annotation, and proportion analysis at 14 DPI | `05_downstream_analysis/downstream_analysis_14dpi.ipynb` → `06_proportion_analysis/cell_prop_UMAP_gen.R` |
+| Fig. 3 | UMAP, cell type annotation, and proportion analysis at 84 DPI | `05_downstream_analysis/downstream_analysis_84dpi.ipynb` → `06_proportion_analysis/cell_prop_UMAP_gen.R` |
+| Fig. 4 | Monocyte volcano plots and GO enrichment (VE vs PI, 14 & 84 DPI) | `07_DEG_analysis/` → `08_GO_enrichment/DEGs_GO_manuscript_mono.R` |
+| Fig. 5 | Cross-timepoint monocyte DEG concordance, discordant sets, and unique 14 DPI GO terms | `09_concordant_discordant_analysis/DE_summary_allcelltypes_allcontrast.ipynb` → `10_unique_atD14_analysis/unique_DEGs_GO.ipynb` |
+| Fig. 6 | Flow cytometry validation of scRNA-seq immune cell proportions | `11_Flow_cytometry/check_flow_prop_script.R` |
 
 ---
 
