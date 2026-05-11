@@ -1,9 +1,8 @@
 
 ## Flow cytometry for day 84 ###
-.libPaths("/work/ABG/mkapoor/mkapoor/.ondemand-new/mkapoor/rstudio/libs/4.4.1")
+.libPaths("rstudio/libs/4.4.1")
 
-seurat_84dpi <- readRDS("/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/filtered_postQC_postcb_postdoublet_postdowns_postcellcycle_updated_annotation_84dpi.rds")
-#seurat_84dpi_subset_1 <- readRDS("/work/ABG/mkapoor/PRRSV/PRRSV_cellranger_v97/filtered_postQC_postcb_postdoublet_postdowns_postcellcycle_ABT_subset_84dpi.rds")
+seurat_84dpi <- readRDS("./PRRSV/filtered_postQC_postcb_postdoublet_postdowns_postcellcycle_updated_annotation_84dpi.rds")
 #number of cells ineach celltype in each treatment
 table(seurat_84dpi$CellTypes, seurat_84dpi$Treatment)
 #table(seurat_84dpi_subset_1$CellTypes, seurat_84dpi_subset_1$Treatment)
@@ -52,7 +51,7 @@ ggplot(heatmap_long, aes(x = CellTypes, y = Sample, fill = frequency)) +
 #some distributions - Sex related#
 sex_cluster_df <- as.data.frame(seurat_84dpi@meta.data)
 sex_treat_df <- as.data.frame(seurat_84dpi@meta.data)
-# Build contingency table: Cluster × Sex
+#  contingency table: Cluster × Sex
 sex_counts <- as.data.frame(table(Cluster = sex_cluster_df$louvain_res0_8,
                                   Sex = sex_cluster_df$Sex))
 
@@ -65,7 +64,7 @@ ggplot(sex_counts, aes(x = as.factor(Cluster), y = Freq, fill = Sex)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# Build contingency table: Treatment × Sex
+#  contingency table: Treatment × Sex
 sex_counts_t <- as.data.frame(table(Treatment = sex_treat_df$Treatment,
                                     Sex = sex_treat_df$Sex))
 
@@ -81,7 +80,7 @@ ggplot(sex_counts_t, aes(x = as.factor(Treatment), y = Freq, fill = Sex)) +
 ###sow related ####
 sow_cluster_df <- as.data.frame(seurat_84dpi@meta.data)
 sow_treat_df <- as.data.frame(seurat_84dpi@meta.data)
-# Build contingency table: Cluster × Sex
+#  contingency table: Cluster × Sex
 sow_counts <- as.data.frame(table(Cluster = sow_cluster_df$louvain_res0_8,
                                   Sow = sow_cluster_df$Sow))
 
@@ -93,7 +92,7 @@ ggplot(sow_counts, aes(x = as.factor(Cluster), y = Freq, fill = Sow)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# Build contingency table: Treatment × Sow
+#  contingency table: Treatment × Sow
 sow_counts_t <- as.data.frame(table(Treatment = sow_treat_df$Treatment,
                                     Sow = sow_treat_df$Sow))
 
@@ -117,11 +116,6 @@ cluster_counts <- umap_df %>%
   arrange(desc(n))
 
 
-#cluster_colors <- setNames(
-#  hue_pal()(length(unique(umap_df$cluster))),
-#  sort(unique(umap_df$cluster))
-#)
-#cols <- c('lightpink', 'red', 'orange', 'gold', 'darkgreen', 'mediumseagreen', 'skyblue2', 'steelblue', 'navy', 'plum3', 'darkmagenta', 'black', 'grey')
 cluster_colors <- c(
   "CD2- GD T cells" = "plum",
   "B cells" = "orange",
@@ -199,7 +193,7 @@ plot3
 
 # Flow cytometry for day 14 ###
 
-seurat_14dpi <- readRDS("/work/abg/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/filtered_postQC_postcb_postdoublet_postdowns_annotated_14dpi.rds")
+seurat_14dpi <- readRDS("./PRRSV/filtered_postQC_postcb_postdoublet_postdowns_annotated_14dpi.rds")
 
 Idents(seurat_14dpi) <- seurat_14dpi$celltypes
 meta <- seurat_14dpi@meta.data
@@ -262,12 +256,6 @@ cluster_counts <- umap_df %>%
   count(cluster) %>%
   arrange(desc(n))
 
-
-#cluster_colors <- setNames(
-#  hue_pal()(length(unique(umap_df$cluster))),
-#  sort(unique(umap_df$cluster))
-#)
-#cols <- c('lightpink', 'red', 'orange', 'gold', 'darkgreen', 'mediumseagreen', 'skyblue2', 'steelblue', 'navy', 'plum3', 'darkmagenta', 'black', 'grey')
 cluster_colors <- c(
   "CD2- GD T cells" = "plum",
   "B cells" = "orange",
@@ -464,7 +452,7 @@ table(seurat_14dpi$celltypes, seurat_14dpi$Treatment)
 
 
 ###FLOw- 2 comparsion to sc proprtions##
-seurat_14dpi <- readRDS("/work/ABG/mkapoor/mkapoor/Project_Fang_10X/14dpi_PRRSV/Project_Fang_10X/Project_Fang_10X/filtered_postQC_postcb_postdoublet_postdowns_annotated_14dpi.rds")
+seurat_14dpi <- readRDS("./PRRSV/filtered_postQC_postcb_postdoublet_postdowns_annotated_14dpi.rds")
 
 Idents(seurat_14dpi) <- seurat_14dpi$celltypes
 meta <- seurat_14dpi@meta.data %>%
@@ -488,7 +476,6 @@ scrna_props <- scrna_props %>%
   fill(Treatment, .direction = "downup") %>%
   ungroup()
 
-write.csv(scrna_props,"/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/scrna_props_14dpi.csv", row.names = FALSE)
 
 ggplot(scrna_props, aes(x = celltypes, y = Sample, fill = prop_scrna)) +
   geom_tile(color = "gray90", linewidth = 0.2) +
@@ -503,7 +490,7 @@ ggplot(scrna_props, aes(x = celltypes, y = Sample, fill = prop_scrna)) +
        x = "Cell type", y = "Sample")
 
 ####84 dpi
-seurat_84dpi <- readRDS("/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/filtered_postQC_postcb_postdoublet_postdowns_postcellcycle_updated_annotation_84dpi.rds")
+seurat_84dpi <- readRDS("./PRRSV/filtered_postQC_postcb_postdoublet_postdowns_postcellcycle_updated_annotation_84dpi.rds")
 
 Idents(seurat_84dpi) <- seurat_84dpi$CellTypes
 meta <- seurat_84dpi@meta.data %>%
@@ -527,8 +514,6 @@ scrna_props <- scrna_props %>%
   fill(Treatment, .direction = "downup") %>%
   ungroup()
 
-write.csv(scrna_props,"/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/scrna_props_84dpi.csv", row.names = FALSE)
-
 ggplot(scrna_props, aes(x = CellTypes, y = Sample, fill = prop_scrna)) +
   geom_tile(color = "gray90", linewidth = 0.2) +
   geom_text(aes(label = sprintf("%.3f", prop_scrna)), size = 2.7, fontface = "bold") +
@@ -541,7 +526,7 @@ ggplot(scrna_props, aes(x = CellTypes, y = Sample, fill = prop_scrna)) +
   labs(title = "scRNA cell-type proportions per sample- 84 dpi",
        x = "Cell type", y = "Sample")
 ###subset
-seurat_84dpi_AB <- readRDS("/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/filtered_postQC_postcb_postdoublet_postdowns_postcellcycle_ABT_subset_84dpi.rds")
+seurat_84dpi_AB <- readRDS("./PRRSV/filtered_postQC_postcb_postdoublet_postdowns_postcellcycle_ABT_subset_84dpi.rds")
 meta_AB   <- seurat_84dpi_AB@meta.data%>%
   dplyr::select(Sample, Treatment, CellTypes)
 
@@ -587,9 +572,9 @@ ggplot(ab_props_vs_all, aes(x = CellTypes, y = Sample, fill = prop_of_all)) +
 
 # 5 populations: GD, B, NK, Myeloid, AB
 
-flow <- read.csv("/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/Flow_proportions.csv", sep= '')
-sc_14 <- read.csv("/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/scrna_props_14dpi.csv")
-sc_84 <- read.csv("/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/scrna_props_84dpi.csv")
+flow <- read.csv("./PRRSV/Flow_proportions.csv", sep= '')
+sc_14 <- read.csv("./PRRSV/scrna_props_14dpi.csv")
+sc_84 <- read.csv("./PRRSV/scrna_props_84dpi.csv")
 
 
 flow14_5 <- flow %>%
@@ -912,11 +897,5 @@ ggplot(cor_plot, aes(x = Treatment, y = pop5)) +
     panel.grid  = element_blank()
   )
 
-write.csv(cor_plot, file="/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/day84_sc_flow_plot_metrics.csv")
-
-
 comp14$n_total <- NULL; comp14$n <- NULL
-write.csv(comp14, file="/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/day14_sc_flow.csv")
-
 comp84$n_total <- NULL; comp84$n <- NULL
-write.csv(comp84, file="/work/ABG/mkapoor/mkapoor/PRRSV/PRRSV_cellranger_v97/day84_sc_flow.csv")
