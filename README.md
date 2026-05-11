@@ -5,7 +5,7 @@
 
 This repository contains the analysis code and scripts used to reproduce all figures in:
 
-We profiled peripheral blood mononuclear cells (PBMCs) from pigs challenged with Porcine Reproductive and Respiratory Syndrome Virus type 2 (PRRSV-2) using single-cell RNA sequencing (scRNA-seq). By comparing immune cell transcriptomes across three infection outcomes — mock-infected (MI), virus extinct (VE), and persistently infected (PI) — at two time points (14 and 84 days post-infection, DPI), we identify cell-type-specific gene expression signatures that distinguish viral clearance from persistence, with a focus on monocyte-driven immune programs.
+We profiled peripheral blood mononuclear cells (PBMCs) from pigs challenged with Porcine Reproductive and Respiratory Syndrome Virus type 2 (PRRSV-2) using single-cell RNA sequencing (scRNA-seq). By comparing immune cell transcriptomes across three infection outcomes — mock-infected (MI), virus extinct (VE), and persistently infected (PI) at two time points (14 and 84 days post-infection, DPI). We identify cell-type-specific gene expression signatures that distinguish viral clearance from persistence, with a focus on monocyte-driven immune programs.
 
 ---
 
