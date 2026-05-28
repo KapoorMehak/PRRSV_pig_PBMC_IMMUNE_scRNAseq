@@ -1,4 +1,4 @@
-# Distinct Cell-Type-Specific Gene Expression Signatures Predict Persistent Viral Infection in Pigs
+# Distinct Cell-Type-Specific Gene Expression Signatures associated with persistence versus clearance of Viral Infection in Pigs
 
 ---
 ## Overview
