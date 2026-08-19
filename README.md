@@ -74,7 +74,7 @@ PRRSV_pig_PBMC_IMMUNE_scRNAseq/
 |--------|-------------|---------|
 | Fig. 1 | PRRSV challenge experimental design | *(BioRender schematic — no code)* |
 | Fig. 2 | UMAP, cell type annotation, and proportion analysis at 14 DPI | `05_downstream_analysis/downstream_analysis_14dpi.ipynb` → `06_proportion_analysis/cell_prop_UMAP_gen.R` |
-| Fig. 3 | UMAP, cell type annotation, and proportion analysis at 84 DPI | `05_downstream_analysis/downstream_analysis_84dpi.ipynb` → `06_proportion_analysis/cell_prop_UMAP_gen.R` |
+| Fig. 3 | UMAP, cell type annotation, and cell type proportion analysis at 84 DPI | `05_downstream_analysis/downstream_analysis_84dpi.ipynb` → `06_proportion_analysis/cell_prop_UMAP_gen.R` |
 | Fig. 4 | Monocyte volcano plots and GO enrichment (VE vs PI, 14 & 84 DPI) | `07_DEG_analysis/` → `08_GO_enrichment/DEGs_GO_manuscript_mono.R` |
 | Fig. 5 | Cross-timepoint monocyte DEG concordance, discordant sets, and unique 14 DPI GO terms | `09_concordant_discordant_analysis/DE_summary_allcelltypes_allcontrast.ipynb` → `10_unique_atD14_analysis/unique_DEGs_GO.ipynb` |
 | Fig. 6 | Flow cytometry validation of scRNA-seq immune cell proportions | `11_Flow_cytometry/check_flow_prop_script.R` |
