@@ -1,4 +1,4 @@
-#######SCRIPT for generating figures manuscript###########
+#######SCRIPT for generating figures2,3 manuscript###########
 .libPaths("./rstudio/libs/4.4.1")
 library(Seurat)
 library(broom)
