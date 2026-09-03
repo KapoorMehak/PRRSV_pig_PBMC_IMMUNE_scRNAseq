@@ -84,6 +84,7 @@ PRRSV_pig_PBMC_IMMUNE_scRNAseq/
 
 Raw sequencing data (FASTQ files) are deposited at NCBI Gene Expression Omnibus 
 **Accession:** PRJNA1392488
+
 Filtered and annotated sequencing data (rds files) are deposited at Zenodo 
 **URL:** https://doi.org/10.5281/zenodo.22237545
 
